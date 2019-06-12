@@ -1,6 +1,5 @@
 package me.ohvalsgod.bridge.permissions;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public interface PermissionsHolder {
@@ -17,7 +16,7 @@ public interface PermissionsHolder {
     }
 
     default boolean hasPermission(String permission) {
-        return permission.contains(permission);
+        return getPermissions().contains(permission);
     }
 
     boolean update();

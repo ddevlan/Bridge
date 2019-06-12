@@ -1,38 +1,29 @@
-package me.ohvalsgod.bridge.permissions.grant;
+package me.ohvalsgod.bridge.permissions.user.grant;
+
+import me.ohvalsgod.bridge.permissions.group.PermissionsGroup;
 
 import java.util.UUID;
 
 public class GrantBuilder {
 
-    private UUID issuerId, receiverId, permissionsGroupId;
+    private UUID issuerId;
+    private PermissionsGroup permissionsGroup;
     private long duration;
     private String reason = "No reason available.";
     private String scope = "ALL";
-
 
     public GrantBuilder(UUID issuerId) {
         this.issuerId = issuerId;
     }
 
     /**
-     * Receiver of the grant
-     *
-     * @param receiverId the receiver's uuid
-     * @return builder
-     */
-    public GrantBuilder receiver(UUID receiverId) {
-        this.receiverId = receiverId;
-        return this;
-    }
-
-    /**
      * PermissionsGroup to be granted.
      *
-     * @param permissionsGroupId permissionsgroup uuid
+     * @param permissionsGroup permissionsgroup uuid
      * @return builder
      */
-    public GrantBuilder permissionsGroup(UUID permissionsGroupId) {
-        this.permissionsGroupId = permissionsGroupId;
+    public GrantBuilder permissionsGroup(PermissionsGroup permissionsGroup) {
+        this.permissionsGroup = permissionsGroup;
         return this;
     }
 
@@ -62,7 +53,7 @@ public class GrantBuilder {
      * The scope of a grant is which servers (or group of servers)
      * that a player would have that grant on. For instance, if you
      * used the command '/ogrant ohvals owner permanent Hubs Rank Grant description...',
-     * ohvals would only have owner rank on all servers that belong to the group Hub.
+     * ohvals would only have owner group on all servers that belong to the group Hub.
      * The same goes for specific servers.
      *
      * @param scope server scope
@@ -81,10 +72,9 @@ public class GrantBuilder {
      * @return grant object
      */
     public Grant get() {
-        Grant grant = new Grant(issuerId, receiverId, permissionsGroupId, duration, reason, scope);
+        Grant grant = new Grant(issuerId, permissionsGroup, scope, reason, duration);
 
-        grant.setCreationDate(System.currentTimeMillis());
-        grant.setActive(true);
+        grant.setAddedAt(System.currentTimeMillis());
 
         return grant;
     }

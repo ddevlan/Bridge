@@ -5,71 +5,47 @@ import lombok.Getter;
 import lombok.Setter;
 import me.ohvalsgod.bridge.BridgePlugin;
 import me.ohvalsgod.bridge.permissions.PermissionsHolder;
-import me.ohvalsgod.bridge.permissions.grant.Grant;
-import me.ohvalsgod.bridge.permissions.grant.GrantBuilder;
 import me.ohvalsgod.bridge.permissions.group.PermissionsGroup;
+import me.ohvalsgod.bridge.permissions.user.grant.Grant;
+import me.ohvalsgod.bridge.permissions.user.grant.GrantBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 import org.mongodb.morphia.annotations.*;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Getter
+@Setter
 @Entity(value = "users", noClassnameStored = true)
+@Indexes({
+        @Index(fields = @Field("uniqueId"))
+})
 public class PermissionsUser implements PermissionsHolder {
 
     @Id
-    @Indexed(options = @IndexOptions(unique = true))
     private String uniqueId;
 
-    @Setter
     private String name;
 
     @Embedded
-    private Set<Grant> grants;
+    private List<Grant> grants = new ArrayList<>();
 
-    private Set<String> permissions;
+    private Set<String> permissions = new HashSet<>();
 
     @Transient
     private transient PermissionAttachment attachment;
+
+    @Embedded
+    private Grant activeGrant = null;
 
     public PermissionsUser() {
         //  Empty constructor for morphia.
     }
 
     public PermissionsUser(String name, UUID uniqueId) {
-        this(uniqueId);
         this.name = name;
-    }
-
-    public PermissionsUser(UUID uniqueId) {
         this.uniqueId = uniqueId.toString();
-        this.grants = new HashSet<>();
-        this.permissions = new HashSet<>();
-    }
-
-    private Grant getActiveGrant() {
-        for (Grant grant : grants
-                .stream()
-                .min(Comparator.comparingDouble(value -> BridgePlugin.getBridgeInstance().getPermissionsHandler().getGroup(value.getPermissionsGroupUUID()).getWeight())).stream().collect(Collectors.toList())) {
-            if (grant.isActive()) {
-                if (grant.getScope().equalsIgnoreCase(RedstoneBukkitAPI.getCurrentServerName()) || grant.getScope().equalsIgnoreCase("ALL")) {
-                    return grant;
-                }
-            }
-        }
-        return new GrantBuilder(null)
-                        .receiver(getUUID())
-                        .permissionsGroup(BridgePlugin.getBridgeInstance().getPermissionsHandler().getDefaultGroupId())
-                        .duration(2147483647L)
-                        .reason("Default group granted.")
-                        .scope("ALL")
-                        .get();
     }
 
     public UUID getUUID() {
@@ -79,6 +55,30 @@ public class PermissionsUser implements PermissionsHolder {
     @Override
     public Set<String> getPermissions() {
         return permissions;
+    }
+
+    public Grant getActiveGrant() {
+        //  Find and update the active grant    TODO: sort by weight
+        for (Grant grant : grants) {
+            if (grant.isActive()) {
+                if (grant.getScope().equalsIgnoreCase(RedstoneBukkitAPI.getCurrentServerName()) || grant.getScope().equalsIgnoreCase("ALL")) {
+                    this.activeGrant = grant;
+                }
+            }
+        }
+
+        if (activeGrant == null) {
+            //TODO: don't create a new one, just grab the default grant from permission handler class
+            this.activeGrant = new GrantBuilder(UUID.fromString("f78a4d8d-d51b-4b39-98a3-230f2de0c670"))
+                    .permissionsGroup(BridgePlugin.getBridgeInstance().getPermissionsHandler().getGroup(BridgePlugin.getBridgeInstance().getPermissionsHandler().getDefaultGroupId()))
+                    .duration(2147483647L)
+                    .reason("Default group granted.")
+                    .scope("ALL")
+                    .get();
+
+            grants.add(activeGrant);
+        }
+        return activeGrant;
     }
 
     @Override
@@ -135,10 +135,16 @@ public class PermissionsUser implements PermissionsHolder {
                 }
 
             }
+
+            player.recalculatePermissions();
             return true;
         }
         BridgePlugin.getBridgeInstance().getLogger().warning("Attempted to update player permissions when they were offline");
         return false;
+    }
+
+    public Player toPlayer() {
+        return Bukkit.getPlayer(getUUID());
     }
 
 }

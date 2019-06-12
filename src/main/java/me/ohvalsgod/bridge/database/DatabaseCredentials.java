@@ -39,7 +39,7 @@ public class DatabaseCredentials {
 
     public static DatabaseCredentials fromConfig(FileConfiguration configuration, DatabaseType type) {
 
-        if (!configuration.isConfigurationSection(type.name().toLowerCase())) {
+        if (!configuration.contains(type.name().toLowerCase())) {
             return null;
         }
 

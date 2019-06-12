@@ -3,7 +3,6 @@ package me.ohvalsgod.bridge.database.type.mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
-import lombok.Getter;
 import me.ohvalsgod.bridge.database.DatabaseConnectionManager;
 import me.ohvalsgod.bridge.database.DatabaseCredentials;
 import me.ohvalsgod.bridge.database.type.mongo.group.MongoPermissionsGroupDAOImpl;
@@ -20,10 +19,10 @@ public class MongoConnectionManager extends DatabaseConnectionManager {
     
     private MongoClient mongoClient;
     private Morphia morphia;
-    private Datastore userStore, groupStore;
+    private Datastore bridgeStore;
 
-    @Getter private MongoPermissionsUserDAOImpl permissionsUserDAO;
-    @Getter private MongoPermissionsGroupDAOImpl permissionsGroupDAO;
+    private MongoPermissionsUserDAOImpl permissionsUserDAO;
+     private MongoPermissionsGroupDAOImpl permissionsGroupDAO;
 
     public MongoConnectionManager(DatabaseCredentials credentials) {
         super(credentials);
@@ -45,21 +44,22 @@ public class MongoConnectionManager extends DatabaseConnectionManager {
 
                 this.mongoClient = new MongoClient(address);
                 this.morphia = new Morphia();
-
-                //  Morphia will handle all of the mapping for us, making saving and fetching significantly easier
-                this.morphia.map(PermissionsUser.class);
-                this.userStore = morphia.createDatastore(mongoClient, "users");
-                this.userStore.ensureIndexes();
-
-                this.morphia.map(PermissionsGroup.class);
-                this.groupStore = morphia.createDatastore(mongoClient, "groups");
-                this.groupStore.ensureIndexes();
-
-                this.permissionsUserDAO = new MongoPermissionsUserDAOImpl(PermissionsUser.class, userStore);
-                this.permissionsGroupDAO = new MongoPermissionsGroupDAOImpl(PermissionsGroup.class, groupStore);
             }
+
+            //  Morphia will handle all of the mapping for us, making saving and fetching significantly easier
+            this.bridgeStore = morphia.createDatastore(mongoClient, "bridge");
+
+            this.morphia.map(PermissionsUser.class);
+
+            this.morphia.map(PermissionsGroup.class);
+
+            this.bridgeStore.ensureIndexes();
+
+            this.permissionsUserDAO = new MongoPermissionsUserDAOImpl(PermissionsUser.class, bridgeStore);
+            this.permissionsGroupDAO = new MongoPermissionsGroupDAOImpl(PermissionsGroup.class, bridgeStore);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;   //  And if something bad happens, we just close the server.
         }
     }
@@ -80,4 +80,11 @@ public class MongoConnectionManager extends DatabaseConnectionManager {
         }
     }
 
+    public MongoPermissionsGroupDAOImpl getPermissionsGroupDAO() {
+        return permissionsGroupDAO;
+    }
+
+    public MongoPermissionsUserDAOImpl getPermissionsUserDAO() {
+        return permissionsUserDAO;
+    }
 }

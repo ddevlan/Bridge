@@ -25,8 +25,8 @@ public class PermissionListener implements Listener {
         if (permissionsHandler.getUser(event.getPlayer().getUniqueId()) != null) {
             user = permissionsHandler.getUser(event.getPlayer().getUniqueId());
         } else {
-            user = new PermissionsUser(event.getPlayer().getUniqueId());
-            permissionsHandler.createUser(event.getPlayer().getUniqueId());
+            user = permissionsHandler.createUser(event.getPlayer());
+            plugin.getMongo().getPermissionsUserDAO().saveUser(user);
         }
 
         user.update();

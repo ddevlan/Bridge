@@ -7,9 +7,9 @@ import org.bukkit.entity.Player;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class MongoPermissionsUserDAOImpl extends BasicDAO<PermissionsUser, String> implements PermissionsUserDAO {
 
@@ -22,8 +22,7 @@ public class MongoPermissionsUserDAOImpl extends BasicDAO<PermissionsUser, Strin
         PermissionsUser permissionsUser = findOne("uniqueId", uniqueId.toString());
 
         if (permissionsUser == null) {
-            permissionsUser = new PermissionsUser(uniqueId);
-            save(permissionsUser);
+            return null;
         }
 
         return permissionsUser;
@@ -58,7 +57,9 @@ public class MongoPermissionsUserDAOImpl extends BasicDAO<PermissionsUser, Strin
 
     @Override
     public List<PermissionsUser> getOnlineUsers() {
-        return getAllUsers().stream().filter(permissionsUser -> Bukkit.getPlayer(permissionsUser.getUUID()).isOnline()).collect(Collectors.toList());
+        List<PermissionsUser> online = new ArrayList<>();
+        Bukkit.getOnlinePlayers().forEach(o -> online.add(getByPlayer(o)));
+        return online;
     }
 
 }

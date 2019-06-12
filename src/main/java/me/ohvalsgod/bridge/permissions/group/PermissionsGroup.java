@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.ohvalsgod.bridge.permissions.PermissionsHolder;
 import org.bukkit.ChatColor;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
-import org.mongodb.morphia.annotations.IndexOptions;
-import org.mongodb.morphia.annotations.Indexed;
+import org.mongodb.morphia.annotations.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,23 +13,30 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity(value = "groups", noClassnameStored = true)
+@Indexes({
+        @Index(fields = @Field("uniqueId"))
+})
 public class PermissionsGroup implements PermissionsHolder {
 
+    /*
+        TODO:
+        - Make groups have a scope also, and only load them if they are on the specific server.
+     */
+
     @Id
-    @Indexed(options = @IndexOptions(unique = true))
     private String uniqueId;
 
     private String name;
 
-    private String prefix = "", suffix = "", nameColor = "";
+    private String prefix = "", suffix = "", nameColor = "&f";
 
     private boolean showPrefix = false, showSuffix = false;
 
     private double weight = 0;
 
-    private Set<String> permissions;
+    private Set<String> permissions = new HashSet<>();
 
-    private Set<String> inherits;
+    private Set<String> inherits = new HashSet<>();
 
     private boolean defaultGroup = false;
 
@@ -42,8 +46,6 @@ public class PermissionsGroup implements PermissionsHolder {
 
     public PermissionsGroup(String name) {
         this.name = name;
-        this.permissions = new HashSet<>();
-        this.inherits = new HashSet<>();
     }
 
     public PermissionsGroup(String name, UUID uniqueId) {

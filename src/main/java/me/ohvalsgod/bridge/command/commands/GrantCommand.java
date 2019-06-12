@@ -3,7 +3,7 @@ package me.ohvalsgod.bridge.command.commands;
 import io.github.thatkawaiisam.redstone.shared.RedstoneSharedAPI;
 import me.ohvalsgod.bridge.BridgePlugin;
 import me.ohvalsgod.bridge.permissions.PermissionsHandler;
-import me.ohvalsgod.bridge.permissions.grant.GrantBuilder;
+import me.ohvalsgod.bridge.permissions.user.grant.GrantBuilder;
 import me.ohvalsgod.bridge.permissions.group.PermissionsGroup;
 import me.ohvalsgod.bridge.permissions.user.PermissionsUser;
 import me.ohvalsgod.bukkitlib.command.Command;
@@ -33,8 +33,7 @@ public class GrantCommand {
                                     @Parameter(name = "duration") String duration,
                                     @Parameter(name = "scope") String scope,
                                     @Parameter(name = "reason", wildcard = true) String reason) {
-
-        if (TimeUtils.parseTime(scope) <= 0) {
+        if (TimeUtils.parseTime(duration) <= 0) {
             issuer.sendMessage(ChatColor.RED + "Duration '" + duration + "' is invalid.");
             return;
         }
@@ -44,14 +43,16 @@ public class GrantCommand {
             return;
         }
 
-        PermissionsUser user = (permissionsHandler.userExists(player.getUniqueId()) ? permissionsHandler.getUser(player.getUniqueId()):permissionsHandler.createUser(player.getUniqueId()));
+        System.out.println(player.getUniqueId() != null ? player.getUniqueId().toString(): false);
+        PermissionsUser user = permissionsHandler.getUser(player.getUniqueId());
 
         user.getGrants().add(new GrantBuilder((issuer instanceof Player) ? ((Player)issuer).getUniqueId():null)
-                .permissionsGroup(group.getUUID())
+                .permissionsGroup(group)
                 .duration(TimeUtils.parseTime(duration))
                 .scope(scope)
                 .reason(reason)
                 .get());
+        user.getActiveGrant();
         user.update();
 
         issuer.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Successfully granted '&r" + group.getFormattedName(player.getName()) + "&6' the " + group.getFancyName() + "&6 group."));
