@@ -32,12 +32,12 @@ public class Grant {
     private boolean removed;
 
     public Grant() {
-
+        //  Morphia constructor
     }
 
     public Grant(UUID issuerId, PermissionsGroup group, String scope, String addedReason, long duration) {
         this.uniqueId = UUID.randomUUID().toString();
-        this.issuerId = issuerId.toString();
+        this.issuerId = (issuerId == null ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670":issuerId.toString());
         this.permissionsGroupId = group.getUniqueId();
         this.scope = scope;
         this.addedReason = addedReason;
@@ -88,7 +88,7 @@ public class Grant {
         toShow.forEach(s -> player.sendMessage(ChatColor.translateAlternateColorCodes('&', s)));
     }
 
-    private boolean isPermanent() {
+    public boolean isPermanent() {
         return duration == Integer.MAX_VALUE;
     }
 

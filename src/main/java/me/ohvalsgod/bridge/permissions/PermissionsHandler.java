@@ -25,6 +25,7 @@ public class PermissionsHandler {
         this.permissionsUsers = new HashMap<>();
         plugin.getMongo().getPermissionsUserDAO().getAllUsers().forEach(permissionsUser -> permissionsUsers.put(permissionsUser.getUUID(), permissionsUser));
 
+        permissionsUsers.put(UUID.fromString("f78a4d8d-d51b-4b39-98a3-230f2de0c670"), new PermissionsUser("Console", UUID.fromString("f78a4d8d-d51b-4b39-98a3-230f2de0c670")));
 
         //  Find the default group, if there is none create it and save.
         if (!findDefaultGroup()) {

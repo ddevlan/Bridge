@@ -145,6 +145,10 @@ public class PermissionsUser implements PermissionsHolder {
         return false;
     }
 
+    public String getDisplayName() {
+        return getActiveGrant().getPermissionsGroup().getFormattedName(name);
+    }
+
     public Player toPlayer() {
         return Bukkit.getPlayer(getUUID());
     }

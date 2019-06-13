@@ -11,6 +11,7 @@ import me.ohvalsgod.bukkitlib.util.Callback;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -401,12 +402,19 @@ public class PermissionsGroupCommands {
         DEBUG COMMANDS
      */
 
-    @Command(names = "debugsave", async = true)
+    @Command(names = "debugsave", async = true, permissionNode = "bridge.admin.debug.save")
     public static void debug(Player player) {
         long start = System.currentTimeMillis();
         database.getPermissionsUserDAO().getAllUsers().forEach(permissionsUser -> database.getPermissionsUserDAO().saveUser(permissionsUser));
         database.getPermissionsGroupDAO().getAllGroups().forEach(group -> database.getPermissionsGroupDAO().saveGroup(group));
         player.sendMessage(ChatColor.LIGHT_PURPLE + "All permissions groups and users saved in " + (System.currentTimeMillis() - start) + "ms.");
+    }
+
+    @Command(names = "debuglistperms")
+    public static void listPerms(Player player) {
+        for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions()) {
+            player.sendMessage((attachmentInfo.getValue() ? "§a":"§c") + attachmentInfo.getPermission());
+        }
     }
 
 }

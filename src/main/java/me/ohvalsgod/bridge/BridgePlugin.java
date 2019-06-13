@@ -17,6 +17,21 @@ import org.bukkit.plugin.java.JavaPlugin;
 @Getter
 public class BridgePlugin extends JavaPlugin {
 
+    /*
+        TODO: Definitely
+        -   Redis sync
+        -   Finish grant view gui
+        -   Add grant give gui
+        -   Decide whether to use auto update runnable or just update when needed
+            -   Depending on choice above, figure out how Bridge is going to remove grants after they expire
+        -   Maybe dont load all users at once in PermissionsHandler, and find them when needed
+        -   Code optimizations
+        -   Only show prefix in chat for PermissionsGroup
+
+        TODO: Possibly, maybe not
+        -   Wildcard support
+     */
+
     @Getter protected static BridgePlugin bridgeInstance;
 
     private PermissionsHandler permissionsHandler;
