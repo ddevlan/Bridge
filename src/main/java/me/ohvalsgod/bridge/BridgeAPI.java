@@ -20,6 +20,10 @@ public class BridgeAPI {
         return plugin.getPermissionsHandler().getUser(uuid);
     }
 
+    public String getFormat(UUID uuid) {
+        PermissionsUser user = getUser(uuid);
+        return user.getActiveGrant().getPermissionsGroup().getNameColor() + user.getName();
+    }
 
     /*
         PermissionsGroup methods

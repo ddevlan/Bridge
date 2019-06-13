@@ -23,7 +23,7 @@ public class PermissionsHandler {
         plugin.getMongo().getPermissionsGroupDAO().getAllGroups().forEach(group -> permissionsGroups.put(group.getUUID(), group));
 
         this.permissionsUsers = new HashMap<>();
-        plugin.getMongo().getPermissionsUserDAO().getOnlineUsers().forEach(permissionsUser -> permissionsUsers.put(permissionsUser.getUUID(), permissionsUser));
+        plugin.getMongo().getPermissionsUserDAO().getAllUsers().forEach(permissionsUser -> permissionsUsers.put(permissionsUser.getUUID(), permissionsUser));
 
 
         //  Find the default group, if there is none create it and save.
@@ -84,29 +84,14 @@ public class PermissionsHandler {
         return getUser(uniqueId) != null;
     }
 
-    private boolean findDefaultGroup() {
-        UUID toReturn = null;
-        double lastWeight = -1;
-        for (Map.Entry<UUID, PermissionsGroup> entry : permissionsGroups.entrySet()) {
-            if (entry.getValue().isDefaultGroup()) {
-                if (toReturn != null) {
-                    BridgePlugin.getBridgeInstance().getLogger().warning("More than one default group found.");
-
-                    if (lastWeight > entry.getValue().getWeight()) {
-                        continue;
-                    }
-                }
-
-                toReturn = entry.getKey();
-                lastWeight = entry.getValue().getWeight();
+    public boolean findDefaultGroup() {
+        for (PermissionsGroup group : getPermissionsGroups().values()) {
+            if (group.isDefaultGroup()) {
+                this.defaultGroupId = group.getUUID();
+                return true;
             }
         }
-
-        if (toReturn != null) {
-            this.defaultGroupId = toReturn;
-        }
-
-        return toReturn != null;
+        return false;
     }
 
 }

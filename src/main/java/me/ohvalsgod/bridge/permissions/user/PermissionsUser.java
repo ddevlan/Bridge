@@ -33,11 +33,10 @@ public class PermissionsUser implements PermissionsHolder {
 
     private Set<String> permissions = new HashSet<>();
 
-    @Transient
-    private transient PermissionAttachment attachment;
-
     @Embedded
     private Grant activeGrant = null;
+
+    private transient PermissionAttachment attachment;
 
     public PermissionsUser() {
         //  Empty constructor for morphia.
@@ -58,11 +57,14 @@ public class PermissionsUser implements PermissionsHolder {
     }
 
     public Grant getActiveGrant() {
-        //  Find and update the active grant    TODO: sort by weight
+        double lastWeight = -1;
         for (Grant grant : grants) {
             if (grant.isActive()) {
                 if (grant.getScope().equalsIgnoreCase(RedstoneBukkitAPI.getCurrentServerName()) || grant.getScope().equalsIgnoreCase("ALL")) {
-                    this.activeGrant = grant;
+                    if (grant.getPermissionsGroup().getWeight() > lastWeight) {
+                        this.activeGrant = grant;
+                        lastWeight = grant.getPermissionsGroup().getWeight();
+                    }
                 }
             }
         }

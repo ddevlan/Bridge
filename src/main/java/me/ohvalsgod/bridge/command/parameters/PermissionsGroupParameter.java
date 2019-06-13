@@ -24,7 +24,7 @@ public class PermissionsGroupParameter implements ParameterType<PermissionsGroup
             return null;
         }
 
-        if (!sender.hasPermission("bridge.permissions.grant." + source)) {
+        if (!sender.hasPermission("bridge.permissions.groups." + source)) {
             sender.sendMessage(ChatColor.RED + "No permission.");
             return null;
         }
@@ -37,7 +37,9 @@ public class PermissionsGroupParameter implements ParameterType<PermissionsGroup
         List<String> completions = new ArrayList<>();
 
         for (PermissionsGroup group : BridgePlugin.getBridgeInstance().getPermissionsHandler().getPermissionsGroups().values().stream().sorted(Comparator.comparingDouble(PermissionsGroup::getWeight)).collect(Collectors.toList())) {
-            completions.add(group.getName());
+            if (sender.hasPermission("bridge.permissions.groups." + group.getName().toLowerCase())) {
+                completions.add(group.getName());
+            }
         }
 
         return completions;

@@ -2,6 +2,7 @@ package me.ohvalsgod.bridge;
 
 import lombok.Getter;
 import me.ohvalsgod.bridge.command.parameters.PermissionsGroupParameter;
+import me.ohvalsgod.bridge.command.parameters.PermissionsUserParameter;
 import me.ohvalsgod.bridge.database.Database;
 import me.ohvalsgod.bridge.database.DatabaseHelper;
 import me.ohvalsgod.bridge.database.type.DatabaseType;
@@ -49,6 +50,7 @@ public class BridgePlugin extends JavaPlugin {
 
         //  Commands
         CommandHandler.registerParameterType(PermissionsGroup.class, new PermissionsGroupParameter());
+        CommandHandler.registerParameterType(PermissionsUser.class, new PermissionsUserParameter());
         CommandHandler.loadCommandsFromPackage(this, "me.ohvalsgod.bridge.command.commands");
     }
 
@@ -56,6 +58,10 @@ public class BridgePlugin extends JavaPlugin {
     public void onDisable() {
         for (PermissionsUser user : mongo.getPermissionsUserDAO().getAllUsers()) {
             mongo.getPermissionsUserDAO().saveUser(user);
+        }
+
+        for (PermissionsGroup group : permissionsHandler.getPermissionsGroups().values()) {
+            mongo.getPermissionsGroupDAO().saveGroup(group);
         }
 
         if (mongo.getConnectionManager().connected()) {

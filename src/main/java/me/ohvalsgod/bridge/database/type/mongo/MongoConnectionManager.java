@@ -9,6 +9,7 @@ import me.ohvalsgod.bridge.database.type.mongo.group.MongoPermissionsGroupDAOImp
 import me.ohvalsgod.bridge.database.type.mongo.user.MongoPermissionsUserDAOImpl;
 import me.ohvalsgod.bridge.permissions.group.PermissionsGroup;
 import me.ohvalsgod.bridge.permissions.user.PermissionsUser;
+import me.ohvalsgod.bridge.permissions.user.grant.Grant;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 
@@ -49,8 +50,8 @@ public class MongoConnectionManager extends DatabaseConnectionManager {
             //  Morphia will handle all of the mapping for us, making saving and fetching significantly easier
             this.bridgeStore = morphia.createDatastore(mongoClient, "bridge");
 
+            this.morphia.map(Grant.class);
             this.morphia.map(PermissionsUser.class);
-
             this.morphia.map(PermissionsGroup.class);
 
             this.bridgeStore.ensureIndexes();
