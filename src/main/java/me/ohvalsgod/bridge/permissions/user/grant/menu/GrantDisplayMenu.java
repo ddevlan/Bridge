@@ -24,7 +24,7 @@ public class GrantDisplayMenu extends PaginatedMenu {
 
     @Override
     public String getPrePaginatedTitle(Player player) {
-        return String.format("&7Grants of '%s&7'", user.getDisplayName());
+        return String.format("%s&6's Grants&e", user.getDisplayName());
     }
 
     @Override

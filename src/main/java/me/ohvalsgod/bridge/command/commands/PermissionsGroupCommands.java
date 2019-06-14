@@ -166,8 +166,10 @@ public class PermissionsGroupCommands {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        confirmation.remove(player.getUniqueId());
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7Group deletion confirmation expired."));
+                        if (confirmation.containsKey(player.getUniqueId())) {
+                            confirmation.remove(player.getUniqueId());
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7Group deletion confirmation expired."));
+                        }
                     }
                 }.runTaskLater(plugin, 20 * 60);
             }

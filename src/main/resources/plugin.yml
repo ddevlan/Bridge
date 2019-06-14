@@ -1,5 +1,5 @@
 name: Bridge
 author: ohvals
-version: ${project.version}
+version: ${project.version} (b ${git.commit.id.abbrev})
 main: me.ohvalsgod.bridge.BridgePlugin
 depend: [bLib, Redstone]

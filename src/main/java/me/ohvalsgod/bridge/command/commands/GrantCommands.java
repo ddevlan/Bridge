@@ -49,7 +49,7 @@ public class GrantCommands {
                 .get());
 
 
-        issuer.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Successfully granted '&r" + group.getFormattedName(user.getName()) + "&6' the " + group.getFancyName() + "&6 group."));
+        issuer.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Successfully granted '&r" + user.getDisplayName() + "&6' the " + group.getFancyName() + "&6 group."));
         issuer.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Duration: &r" + WordUtils.capitalize(duration)));
         issuer.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Scope: &r" + (scope.equalsIgnoreCase("all") ? scope:RedstoneSharedAPI.getServer(scope).getServerID())));
         issuer.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6Reason: &r") + reason);
@@ -75,6 +75,18 @@ public class GrantCommands {
     public static void activeGrant(Player player, @Parameter(name = "player") PermissionsUser user) {
         player.sendMessage(ChatColor.YELLOW + "Active grant of '" + user.getActiveGrant().getPermissionsGroup().getFormattedName(user.getName()) + ChatColor.YELLOW + "' is:");
         user.getActiveGrant().show(player);
+    }
+
+    /*
+        Debug commands
+     */
+    @Command(names = "cleargrants", permissionNode = "bridge.permissions.grant.clear")
+    public static void clearGrants(Player player, @Parameter(name = "player") PermissionsUser user) {
+        user.getGrants().clear();
+        user.setActiveGrant(null);
+        user.getActiveGrant();
+        database.getPermissionsUserDAO().saveUser(user);
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format("&dCleared grants of '%s'", user.getName())));
     }
 
 }
