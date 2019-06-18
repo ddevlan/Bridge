@@ -18,24 +18,12 @@ public class MongoPermissionsGroupDAOImpl extends BasicDAO<PermissionsGroup, Str
 
     @Override
     public PermissionsGroup getByUniqueId(UUID uniqueId) {
-        PermissionsGroup permissionsGroup = findOne("uniqueId", uniqueId.toString());
-
-        if (permissionsGroup == null) {
-            return null;
-        }
-
-        return permissionsGroup;
+        return findOne("uniqueId", uniqueId.toString());
     }
 
     @Override
-    public PermissionsGroup getByName(String string) {
-        PermissionsGroup permissionsGroup = findOne("name", string);
-
-        if (permissionsGroup == null) {
-            return null;
-        }
-
-        return permissionsGroup;
+    public PermissionsGroup getByName(String name) {
+        return findOne("name", name);
     }
 
     @Override

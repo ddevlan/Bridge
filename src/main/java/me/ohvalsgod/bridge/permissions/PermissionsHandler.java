@@ -23,7 +23,8 @@ public class PermissionsHandler {
         plugin.getMongo().getPermissionsGroupDAO().getAllGroups().forEach(group -> permissionsGroups.put(group.getUUID(), group));
 
         this.permissionsUsers = new HashMap<>();
-        plugin.getMongo().getPermissionsUserDAO().getAllUsers().forEach(permissionsUser -> permissionsUsers.put(permissionsUser.getUUID(), permissionsUser));
+        plugin.getMongo().getPermissionsUserDAO().getOnlineUsers()
+                .forEach(permissionsUser -> permissionsUsers.put(permissionsUser.getUUID(), permissionsUser));
 
         permissionsUsers.put(UUID.fromString("f78a4d8d-d51b-4b39-98a3-230f2de0c670"), new PermissionsUser("Console", UUID.fromString("f78a4d8d-d51b-4b39-98a3-230f2de0c670")));
 
@@ -34,9 +35,6 @@ public class PermissionsHandler {
 
             plugin.getMongo().getPermissionsGroupDAO().saveGroup(group);
             this.defaultGroupId = group.getUUID();
-            System.out.println("Could not find a default group. Creating one.");
-        } else {
-            System.out.println("Default group has been found! :D");
         }
     }
 
@@ -64,7 +62,7 @@ public class PermissionsHandler {
     }
 
     public PermissionsUser getUser(UUID uniqueId) {
-        return permissionsUsers.get(uniqueId);
+        return permissionsUsers.getOrDefault(uniqueId, null);
     }
 
     public PermissionsUser getUser(String name) {

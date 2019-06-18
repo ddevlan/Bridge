@@ -1,9 +1,8 @@
 package me.ohvalsgod.bridge.database.type.mongo.user;
 
+import me.ohvalsgod.bridge.BridgePlugin;
 import me.ohvalsgod.bridge.permissions.user.PermissionsUser;
 import me.ohvalsgod.bridge.permissions.user.PermissionsUserDAO;
-import me.ohvalsgod.bridge.permissions.user.grant.Grant;
-import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.mongodb.morphia.Datastore;
@@ -21,26 +20,17 @@ public class MongoPermissionsUserDAOImpl extends BasicDAO<PermissionsUser, Strin
 
     @Override
     public PermissionsUser getByUniqueId(UUID uniqueId) {
-        PermissionsUser permissionsUser = findOne("uniqueId", uniqueId.toString());
+        return findOne("uniqueId", uniqueId.toString());
+    }
 
-        if (permissionsUser == null) {
-            return null;
-        }
-
-        return permissionsUser;
+    @Override
+    public PermissionsUser getByName(String name) {
+        return findOne("name", name);
     }
 
     @Override
     public PermissionsUser getByPlayer(Player player) {
-        PermissionsUser permissionsUser = getByUniqueId(player.getUniqueId());
-
-        if (permissionsUser == null) {
-            permissionsUser = new PermissionsUser(player.getName(), player.getUniqueId());
-            save(permissionsUser);
-            return permissionsUser;
-        }
-
-        return permissionsUser;
+        return getByUniqueId(player.getUniqueId());
     }
 
     @Override

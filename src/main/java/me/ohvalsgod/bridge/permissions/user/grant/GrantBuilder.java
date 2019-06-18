@@ -1,16 +1,18 @@
 package me.ohvalsgod.bridge.permissions.user.grant;
 
+import lombok.Getter;
 import me.ohvalsgod.bridge.permissions.group.PermissionsGroup;
 
 import java.util.UUID;
 
+@Getter
 public class GrantBuilder {
 
     private UUID issuerId;
     private PermissionsGroup permissionsGroup;
     private long duration;
     private String reason = "No reason available.";
-    private String scope = "ALL";
+    private String scope;
 
     public GrantBuilder(UUID issuerId) {
         this.issuerId = issuerId;
@@ -28,17 +30,6 @@ public class GrantBuilder {
     }
 
     /**
-     * Duration of the grant in milliseconds.
-     *
-     * @param duration duration of grant
-     * @return builder
-     */
-    public GrantBuilder duration(long duration) {
-        this.duration = duration;
-        return this;
-    }
-
-    /**
      * Reason for the grant being added.
      *
      * @param reason reason for grant
@@ -46,6 +37,17 @@ public class GrantBuilder {
      */
     public GrantBuilder reason(String reason) {
         this.reason = reason;
+        return this;
+    }
+
+    /**
+     * Duration of the grant in milliseconds.
+     *
+     * @param duration duration of grant
+     * @return builder
+     */
+    public GrantBuilder duration(long duration) {
+        this.duration = duration;
         return this;
     }
 

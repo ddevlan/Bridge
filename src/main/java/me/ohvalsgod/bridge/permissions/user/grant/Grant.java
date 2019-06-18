@@ -22,7 +22,7 @@ public class Grant {
     private String uniqueId;
     private String issuerId;
     private String permissionsGroupId;
-    private String scope;
+    private String scope;   //TODO: make this able to be MULTIPLE servers
     private long addedAt;
     private String addedReason;
     private long duration;
@@ -68,6 +68,7 @@ public class Grant {
     public void show(Player player) {
         List<String> toShow = new ArrayList<>();
 
+        //todo update to use database instead of cache
         toShow.add("&7&m----------------------------------");
         toShow.add(String.format("&eUnique ID: &f%s", uniqueId));
         toShow.add(String.format("&eIssuer ID: &f%s &7(%s&7)", issuerId, (BridgePlugin.getBridgeInstance().getPermissionsHandler().getUser(UUID.fromString(issuerId)) == null ? "&4Console":BridgePlugin.getBridgeInstance().getPermissionsHandler().getUser(UUID.fromString(issuerId)).getName())));

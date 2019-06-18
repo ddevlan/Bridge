@@ -150,7 +150,6 @@ public class PermissionsGroupCommands {
                     confirmation.remove(player.getUniqueId());
 
                     for (PermissionsUser user : database.getPermissionsUserDAO().getOnlineUsers()) {
-                        System.out.println(user.getActiveGrant() != null);
                         if (user.getActiveGrant().getPermissionsGroupId().equalsIgnoreCase(group.getUniqueId())) {
                             database.getPermissionsUserDAO().saveUser(user);
                             user.update();
@@ -187,7 +186,6 @@ public class PermissionsGroupCommands {
             database.getPermissionsGroupDAO().saveGroup(group);
 
             for (PermissionsUser user : database.getPermissionsUserDAO().getOnlineUsers()) {
-                System.out.println(user.getActiveGrant() != null);
                 if (user.getActiveGrant().getPermissionsGroupId().equalsIgnoreCase(group.getUniqueId())) {
                     user.update();
                 }
@@ -206,7 +204,6 @@ public class PermissionsGroupCommands {
             database.getPermissionsGroupDAO().saveGroup(group);
 
             for (PermissionsUser user : database.getPermissionsUserDAO().getOnlineUsers()) {
-                System.out.println(user.getActiveGrant() != null);
                 if (user.getActiveGrant().getPermissionsGroupId().equalsIgnoreCase(group.getUniqueId())) {
                     user.update();
                 }
@@ -230,7 +227,6 @@ public class PermissionsGroupCommands {
                         group.getWeight())));
 
         for (PermissionsUser user : database.getPermissionsUserDAO().getOnlineUsers()) {
-            System.out.println(user.getActiveGrant() != null);
             if (user.getActiveGrant().getPermissionsGroupId().equalsIgnoreCase(group.getUniqueId())) {
                 user.update();
             }
@@ -251,7 +247,6 @@ public class PermissionsGroupCommands {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7If you would like the prefix to be shown, use /group toggleprefix <group>"));
         } else {
             for (PermissionsUser user : database.getPermissionsUserDAO().getOnlineUsers()) {
-                System.out.println(user.getActiveGrant() != null);
                 if (user.getActiveGrant().getPermissionsGroupId().equalsIgnoreCase(group.getUniqueId())) {
                     user.update();
                 }
@@ -268,7 +263,6 @@ public class PermissionsGroupCommands {
                         (group.isShowPrefix() ? "§aon":"§coff"))));
 
         for (PermissionsUser user : database.getPermissionsUserDAO().getOnlineUsers()) {
-            System.out.println(user.getActiveGrant() != null);
             if (user.getActiveGrant().getPermissionsGroupId().equalsIgnoreCase(group.getUniqueId())) {
                 user.update();
             }
@@ -289,7 +283,6 @@ public class PermissionsGroupCommands {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7If you would like the suffix to be shown, use /group togglesuffix <group>"));
         } else {
             for (PermissionsUser user : database.getPermissionsUserDAO().getOnlineUsers()) {
-                System.out.println(user.getActiveGrant() != null);
                 if (user.getActiveGrant().getPermissionsGroupId().equalsIgnoreCase(group.getUniqueId())) {
                     user.update();
                 }
@@ -306,7 +299,6 @@ public class PermissionsGroupCommands {
                         (group.isShowSuffix() ? "§aon":"§coff"))));
 
         for (PermissionsUser user : database.getPermissionsUserDAO().getOnlineUsers()) {
-            System.out.println(user.getActiveGrant() != null);
             if (user.getActiveGrant().getPermissionsGroupId().equalsIgnoreCase(group.getUniqueId())) {
                 user.update();
             }
@@ -323,7 +315,6 @@ public class PermissionsGroupCommands {
         group.setNameColor(namecolor);
 
         for (PermissionsUser user : database.getPermissionsUserDAO().getOnlineUsers()) {
-            System.out.println(user.getActiveGrant() != null);
             if (user.getActiveGrant().getPermissionsGroupId().equalsIgnoreCase(group.getUniqueId())) {
                 user.update();
             }
@@ -345,7 +336,6 @@ public class PermissionsGroupCommands {
         permissionsHandler.findDefaultGroup();
 
         for (PermissionsUser user : database.getPermissionsUserDAO().getOnlineUsers()) {
-            System.out.println(user.getActiveGrant() != null);
             if (user.getActiveGrant().getPermissionsGroupId().equalsIgnoreCase(group.getUniqueId())) {
                 user.update();
             }
@@ -365,14 +355,13 @@ public class PermissionsGroupCommands {
             return;
         }
 
-        group.getInherits().add(parent.getUniqueId());
+        group.addInherit(parent);
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
                 String.format("&aAdded &e'%s&e' as a parent group of '%s&e.",
                         parent.getFancyName(),
                         group.getFancyName())));
 
         for (PermissionsUser user : database.getPermissionsUserDAO().getOnlineUsers()) {
-            System.out.println(user.getActiveGrant() != null);
             if (user.getActiveGrant().getPermissionsGroupId().equalsIgnoreCase(group.getUniqueId())) {
                 user.update();
             }
@@ -386,14 +375,13 @@ public class PermissionsGroupCommands {
             return;
         }
 
-        group.getInherits().remove(parent.getUniqueId());
+        group.removeInherit(parent);
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
                 String.format("&cRemoved &e'%s&e' from the parent groups of '%s&e.",
                         parent.getFancyName(),
                         group.getFancyName())));
 
         for (PermissionsUser user : database.getPermissionsUserDAO().getOnlineUsers()) {
-            System.out.println(user.getActiveGrant() != null);
             if (user.getActiveGrant().getPermissionsGroupId().equalsIgnoreCase(group.getUniqueId())) {
                 user.update();
             }

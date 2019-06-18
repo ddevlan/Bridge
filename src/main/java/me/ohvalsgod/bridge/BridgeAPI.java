@@ -17,7 +17,7 @@ public class BridgeAPI {
         PermissionsUser methods
      */
     public PermissionsUser getUser(UUID uuid) {
-        return plugin.getPermissionsHandler().getUser(uuid);
+        return plugin.getMongo().getPermissionsUserDAO().getByUniqueId(uuid);
     }
 
     public String getFormat(UUID uuid) {

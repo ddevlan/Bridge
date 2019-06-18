@@ -24,16 +24,20 @@ public class PermissionListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         PermissionsUser user;
 
-        System.out.println(String.format("PermissionsUser for %s is null? %s", event.getPlayer().getName(), permissionsHandler.getUser(event.getPlayer().getUniqueId()) == null));
         if (permissionsHandler.getUser(event.getPlayer().getUniqueId()) != null) {
             user = permissionsHandler.getUser(event.getPlayer().getUniqueId());
         } else {
-            user = permissionsHandler.createUser(event.getPlayer());
+            user = plugin.getMongo().getPermissionsUserDAO().getByUniqueId(event.getPlayer().getUniqueId());
+
+            if (user == null) {
+                user = permissionsHandler.createUser(event.getPlayer());
+            }
+
             plugin.getMongo().getPermissionsUserDAO().saveUser(user);
         }
 
+        permissionsHandler.getPermissionsUsers().put(user.getUUID(), user);
         user.setName(event.getPlayer().getName());
-
         user.update();
     }
 

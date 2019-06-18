@@ -10,9 +10,11 @@ import me.ohvalsgod.bridge.permissions.PermissionListener;
 import me.ohvalsgod.bridge.permissions.PermissionsHandler;
 import me.ohvalsgod.bridge.permissions.group.PermissionsGroup;
 import me.ohvalsgod.bridge.permissions.user.PermissionsUser;
+import me.ohvalsgod.bridge.permissions.user.grant.process.GrantProcessListener;
 import me.ohvalsgod.bukkitlib.command.CommandHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 @Getter
 public class BridgePlugin extends JavaPlugin {
@@ -20,16 +22,9 @@ public class BridgePlugin extends JavaPlugin {
     /*
         TODO: Definitely
         -   Redis sync
-        -   Finish grant view gui
-        -   Add grant give gui
         -   Decide whether to use auto update runnable or just update when needed
             -   Depending on choice above, figure out how Bridge is going to remove grants after they expire
-        -   Maybe dont load all users at once in PermissionsHandler, and find them when needed
         -   Code optimizations
-        -   Only show prefix in chat for PermissionsGroup
-
-        TODO: Possibly, maybe not
-        -   Wildcard support
      */
 
     @Getter protected static BridgePlugin bridgeInstance;
@@ -53,8 +48,8 @@ public class BridgePlugin extends JavaPlugin {
 
         if (!mongo.getConnectionManager().connected()) {
             getLogger().severe("ERROR: Could not connect to database '" + mongo.getName() + "' with type '" + mongo.getType().name().toLowerCase() + "'. Shutting down.");
-            Bukkit.getServer().getPluginManager().disablePlugin(this);
             mongo.getConnectionManager().close();
+            Bukkit.getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
@@ -62,11 +57,29 @@ public class BridgePlugin extends JavaPlugin {
 
         //  Listeners
         new PermissionListener(this);
+        new GrantProcessListener(this);
 
         //  Commands
         CommandHandler.registerParameterType(PermissionsGroup.class, new PermissionsGroupParameter());
         CommandHandler.registerParameterType(PermissionsUser.class, new PermissionsUserParameter());
         CommandHandler.loadCommandsFromPackage(this, "me.ohvalsgod.bridge.command.commands");
+
+
+        //  Auto save
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (PermissionsUser user : mongo.getPermissionsUserDAO().getAllUsers()) {
+                    mongo.getPermissionsUserDAO().saveUser(user);
+                }
+
+                for (PermissionsGroup group : permissionsHandler.getPermissionsGroups().values()) {
+                    mongo.getPermissionsGroupDAO().saveGroup(group);
+                }
+
+                //update grants possibly?
+            }
+        }.runTaskTimerAsynchronously(this, 20 * 180, 20 * 180);
     }
 
     @Override

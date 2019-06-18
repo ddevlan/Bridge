@@ -24,7 +24,7 @@ public class PlayerCommands {
         List<String> players = new ArrayList<>();
 
         BridgePlugin.getBridgeInstance().getMongo().getPermissionsUserDAO().getOnlineUsers().stream().sorted(Comparator.comparingDouble(value -> value.getActiveGrant().getPermissionsGroup().getWeight())).forEach(user -> {
-            players.add(user.getDisplayName());
+            players.add(user.getColoredName());
         });
 
         Collections.reverse(players);

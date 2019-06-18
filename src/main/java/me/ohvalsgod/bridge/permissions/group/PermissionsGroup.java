@@ -18,11 +18,6 @@ import java.util.UUID;
 })
 public class PermissionsGroup implements PermissionsHolder {
 
-    /*
-        TODO:
-        - Make groups have a scope also, and only load them if they are on the specific server.
-     */
-
     @Id
     private String uniqueId;
 
@@ -30,7 +25,7 @@ public class PermissionsGroup implements PermissionsHolder {
 
     private String prefix = "", suffix = "", nameColor = "&f";
 
-    private boolean showPrefix = false, showSuffix = false;
+    private boolean showPrefix = false, showSuffix = false, cleanDisplay = true;
 
     private double weight = 0;
 
@@ -85,6 +80,10 @@ public class PermissionsGroup implements PermissionsHolder {
 
     public String getFormattedName(String player) {
         return ChatColor.translateAlternateColorCodes('&', (isShowPrefix() ? getPrefix():"") + getNameColor() + player + (isShowSuffix() ? getSuffix():""));
+    }
+
+    public String getColoredName(String player) {
+        return ChatColor.translateAlternateColorCodes('&', nameColor + player);
     }
 
     public UUID getUUID() {

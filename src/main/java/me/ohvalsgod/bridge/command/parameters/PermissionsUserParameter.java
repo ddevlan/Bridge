@@ -20,8 +20,14 @@ public class PermissionsUserParameter implements ParameterType<PermissionsUser> 
 
         //TODO: create a new user, grab their uuid from mojang api
         if (user == null) {
+            user = BridgePlugin.getBridgeInstance().getMongo().getPermissionsUserDAO().getByName(source);
+        }
+
+        if (user == null) {
             sender.sendMessage(ChatColor.RED + "No permissions user with the name '" + source + "' found.");
             return null;
+        } else {
+            BridgePlugin.getBridgeInstance().getPermissionsHandler().getPermissionsUsers().put(user.getUUID(), user);
         }
 
         return user;

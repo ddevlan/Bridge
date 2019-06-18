@@ -18,13 +18,18 @@ public class GrantDisplayMenu extends PaginatedMenu {
 
     private PermissionsUser user;
 
-    public GrantDisplayMenu(PermissionsUser user) {
+    public  GrantDisplayMenu(PermissionsUser user) {
         this.user = user;
     }
 
     @Override
+    public boolean isUpdateAfterClick() {
+        return true;
+    }
+
+    @Override
     public String getPrePaginatedTitle(Player player) {
-        return String.format("%s&6's Grants&e", user.getDisplayName());
+        return String.format("%s&6's Grants&e", user.getColoredName());
     }
 
     @Override
@@ -68,7 +73,7 @@ public class GrantDisplayMenu extends PaginatedMenu {
     public Map<Integer, Button> getAllPagesButtons(Player player) {
         val buttons = new HashMap<Integer, Button>();
 
-        buttons.put(0, new GrantButton(user, user.getActiveGrant()));
+        buttons.put(0, new GrantButton(user.getActiveGrant()));
 
         List<Grant> grants = new ArrayList<>(user.getGrants());
         grants.sort(Comparator.comparingLong(Grant::getAddedAt));
@@ -76,7 +81,7 @@ public class GrantDisplayMenu extends PaginatedMenu {
         int i = 1;
         for (Grant grant : grants) {
             if (grant != user.getActiveGrant()) {
-                buttons.put(i, new GrantButton(user, grant));
+                buttons.put(i, new GrantButton(grant));
                 i++;
             }
         }
@@ -86,12 +91,10 @@ public class GrantDisplayMenu extends PaginatedMenu {
 
     private class GrantButton extends Button {
 
-        private PermissionsUser user;
         private Grant grant;
 
-        public GrantButton(PermissionsUser user, Grant grant) {
+        public GrantButton(Grant grant) {
             this.grant = grant;
-            this.user = user;
         }
 
         @Override
@@ -101,9 +104,11 @@ public class GrantDisplayMenu extends PaginatedMenu {
 
         @Override
         public List<String> getDescription(Player player) {
+
+            //  todo update to use database instead of cache
             List<String> toReturn = new ArrayList<>(Arrays.asList(
                     "&7&m----------------------------",
-                    String.format("&eAdded by: &f%s", BridgePlugin.getBridgeInstance().getPermissionsHandler().getUser(UUID.fromString(grant.getIssuerId())).getDisplayName()),
+                    String.format("&eAdded by: &f%s", BridgePlugin.getBridgeInstance().getPermissionsHandler().getUser(UUID.fromString(grant.getIssuerId())).getColoredName()),
                     String.format("&eAdded at: &f%s", TimeUtils.formatIntoCalendarString(new Date(grant.getAddedAt()))),
                     String.format("&eAdded reason: &f%s", grant.getAddedReason()),
                     String.format("&eScope: &f%s", grant.getScope())
@@ -112,7 +117,7 @@ public class GrantDisplayMenu extends PaginatedMenu {
             if (grant.isRemoved()) {
                 toReturn.addAll(Arrays.asList(
                         "",
-                        String.format("&eRemoved by: &f%s", BridgePlugin.getBridgeInstance().getPermissionsHandler().getUser(UUID.fromString(grant.getRemoverId())).getDisplayName()),
+                        String.format("&eRemoved by: &f%s", BridgePlugin.getBridgeInstance().getPermissionsHandler().getUser(UUID.fromString(grant.getRemoverId())).getColoredName()),
                         String.format("&eRemoved at: &f%s", TimeUtils.formatIntoCalendarString(new Date(grant.getRemovedAt()))),
                         String.format("&eRemoval reason: &f%s", grant.getRemovalReason())
                 ));
@@ -153,7 +158,7 @@ public class GrantDisplayMenu extends PaginatedMenu {
                         user.update();
                         removed.sendMessage(ChatColor.GRAY + "One of your grants has been removed.");
                         removed.sendMessage(ChatColor.GRAY + "You have lost some of your permissions.");
-                        removed.closeInventory();   //  Need to do this just in case they are a staff member, don't want them staying inside a gui or anything.
+                        removed.closeInventory();
                     }
                 }
             }
